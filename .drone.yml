@@ -1,0 +1,67 @@
+kind: pipeline
+type: docker
+name: default
+
+steps:
+  - name: fetch
+    image: docker:git
+    commands:
+      - git fetch --tags
+
+  - name: goreleaser release
+    image: goreleaser/goreleaser
+    environment:
+      GITHUB_TOKEN:
+        from_secret: GITHUB_RELEASE_TOKEN
+      DOCKER_REGISTRY:
+        from_secret: GITHUB_REGISTRY_URL
+      DOCKER_PASSWORD:
+        from_secret: GITHUB_REGISTRY_TOKEN
+      DOCKER_USERNAME:
+        from_secret: GITHUB_REGISTRY_USER
+    volumes:
+      - name: deps
+        path: /go
+      - name: dist
+        path: /drone/src/dist
+      - name: docker-socket
+        path: /var/run/docker.sock
+    commands:
+      - /entrypoint.sh release
+    when:
+      event:
+        - tag
+
+  - name: goreleaser snapshot
+    image: goreleaser/goreleaser
+    environment:
+      GITHUB_TOKEN:
+        from_secret: GITHUB_RELEASE_TOKEN
+      DOCKER_REGISTRY:
+        from_secret: GITHUB_REGISTRY_URL
+      DOCKER_PASSWORD:
+        from_secret: GITHUB_REGISTRY_TOKEN
+      DOCKER_USERNAME:
+        from_secret: GITHUB_REGISTRY_USER
+    volumes:
+      - name: deps
+        path: /go
+      - name: dist
+        path: /drone/src/dist
+      - name: docker-socket
+        path: /var/run/docker.sock
+    commands:
+      - /entrypoint.sh release --snapshot
+      # - docker push ghcr.io/getais/kupdater/operator:latest
+    when:
+      event:
+        - push
+
+volumes:
+  - name: deps
+    temp: {}
+  - name: dist
+    temp: {}
+  - name: docker-socket
+    host:
+      path: /var/run/docker.sock

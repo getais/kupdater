@@ -31,7 +31,7 @@ import (
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
-	opsv1alpha1 "github.com/tomasliumparas/kupdater/api/v1alpha1"
+	opsv1alpha1 "github.com/getais/kupdater/api/v1alpha1"
 	//+kubebuilder:scaffold:imports
 )
 

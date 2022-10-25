@@ -37,8 +37,10 @@ dockers:
       - "--label=org.opencontainers.image.title={{.ProjectName}}"
       - "--label=org.opencontainers.image.revision={{.FullCommit}}"
       - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--label=org.opencontainers.image.url=https://github.com/getais/kupdater"
       - "--label=org.opencontainers.image.source=https://github.com/getais/kupdater"
-
+      - "--label=org.opencontainers.image.authors=Tomas Liumparas <tomas.liumparas@gmail.com>"
+      - "--label=org.opencontainers.image.description=Kupdater - Kubernetes Updater is a minimal operator to track versions of your applications already deployed to kubernetes cluster."
   - image_templates:
       - "ghcr.io/getais/{{ .ProjectName }}/operator:{{ .Version }}-arm64v8"
       - "ghcr.io/getais/{{ .ProjectName }}/operator:latest-arm64v8"
@@ -47,12 +49,14 @@ dockers:
     dockerfile: Dockerfile
     build_flag_templates:
       - "--platform=linux/arm64/v8"
-      - "--label=org.opencontainers.image.title={{.ProjectName}}"
+      - "--label=org.opencontainers.image.created={{.Date}}"
       - "--label=org.opencontainers.image.title={{.ProjectName}}"
       - "--label=org.opencontainers.image.revision={{.FullCommit}}"
       - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--label=org.opencontainers.image.url=https://github.com/getais/kupdater"
       - "--label=org.opencontainers.image.source=https://github.com/getais/kupdater"
-
+      - "--label=org.opencontainers.image.authors=Tomas Liumparas <tomas.liumparas@gmail.com>"
+      - "--label=org.opencontainers.image.description=Kupdater - Kubernetes Updater is a minimal operator to track versions of your applications already deployed to kubernetes cluster."
   - image_templates:
       - "ghcr.io/getais/{{ .ProjectName }}/operator:{{ .Version }}-armv6"
       - "ghcr.io/getais/{{ .ProjectName }}/operator:latest-armv6"
@@ -62,12 +66,14 @@ dockers:
     dockerfile: Dockerfile
     build_flag_templates:
       - "--platform=linux/arm/v6"
-      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.created={{.Date}}"
       - "--label=org.opencontainers.image.title={{.ProjectName}}"
       - "--label=org.opencontainers.image.revision={{.FullCommit}}"
       - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--label=org.opencontainers.image.url=https://github.com/getais/kupdater"
       - "--label=org.opencontainers.image.source=https://github.com/getais/kupdater"
-
+      - "--label=org.opencontainers.image.authors=Tomas Liumparas <tomas.liumparas@gmail.com>"
+      - "--label=org.opencontainers.image.description=Kupdater - Kubernetes Updater is a minimal operator to track versions of your applications already deployed to kubernetes cluster."
   - image_templates:
       - "ghcr.io/getais/{{ .ProjectName }}/operator:{{ .Version }}-armv7"
       - "ghcr.io/getais/{{ .ProjectName }}/operator:latest-armv7"
@@ -77,11 +83,14 @@ dockers:
     dockerfile: Dockerfile
     build_flag_templates:
       - "--platform=linux/arm/v7"
-      - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--label=org.opencontainers.image.created={{.Date}}"
       - "--label=org.opencontainers.image.title={{.ProjectName}}"
       - "--label=org.opencontainers.image.revision={{.FullCommit}}"
       - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--label=org.opencontainers.image.url=https://github.com/getais/kupdater"
       - "--label=org.opencontainers.image.source=https://github.com/getais/kupdater"
+      - "--label=org.opencontainers.image.authors=Tomas Liumparas <tomas.liumparas@gmail.com>"
+      - "--label=org.opencontainers.image.description=Kupdater - Kubernetes Updater is a minimal operator to track versions of your applications already deployed to kubernetes cluster."
 
 docker_manifests:
   - name_template: "ghcr.io/getais/{{ .ProjectName }}/operator:{{ .Version }}"

@@ -1,0 +1,19 @@
+domain: getais.cloud
+layout:
+- go.kubebuilder.io/v4-alpha
+plugins:
+  manifests.sdk.operatorframework.io/v2: {}
+  scorecard.sdk.operatorframework.io/v2: {}
+projectName: kupdater
+repo: github.com/tomasliumparas/kupdater
+resources:
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: getais.cloud
+  group: ops
+  kind: Update
+  path: github.com/tomasliumparas/kupdater/api/v1alpha1
+  version: v1alpha1
+version: "3"

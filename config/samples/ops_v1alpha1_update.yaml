@@ -1,0 +1,13 @@
+---
+apiVersion: ops.getais.cloud/v1alpha1
+kind: Update
+metadata:
+  name: traefik
+  namespace: traefik
+spec:
+  versioning:
+    sources:
+      - name: traefik
+        source: https://helm.traefik.io/traefik
+        type: helm
+        version: "17.0.5"

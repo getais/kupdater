@@ -1,0 +1,24 @@
+# permissions for end users to edit updates.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: update-editor-role
+rules:
+- apiGroups:
+  - ops.getais.cloud
+  resources:
+  - updates
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - ops.getais.cloud
+  resources:
+  - updates/status
+  verbs:
+  - get

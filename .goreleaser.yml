@@ -28,7 +28,7 @@ archives:
 dockers:
   - image_templates:
       - "ghcr.io/{{ .ProjectName }}/operator:{{ .Version }}-amd64"
-      - "ghcr.io/{{ .ProjectName }}/operatolatest}}-amd64"
+      - "ghcr.io/{{ .ProjectName }}/operator:latest-amd64"
     use: buildx
     dockerfile: Dockerfile
     build_flag_templates:
@@ -43,7 +43,7 @@ dockers:
       - "--platform=linux/arm64/v8"
   - image_templates:
       - "ghcr.io/{{ .ProjectName }}/operator:{{ .Version }}-armv6"
-      - "ghcr.io/{{ .ProjectName }}/operatolatest}}-armv6"
+      - "ghcr.io/{{ .ProjectName }}/operator:latest-armv6"
     use: buildx
     goarch: arm
     goarm: "6"
@@ -52,7 +52,7 @@ dockers:
       - "--platform=linux/arm/v6"
   - image_templates:
       - "ghcr.io/{{ .ProjectName }}/operator:{{ .Version }}-armv7"
-      - "ghcr.io/{{ .ProjectName }}/operatolatest}}-armv7"
+      - "ghcr.io/{{ .ProjectName }}/operator:latest-armv7"
     use: buildx
     goarch: arm
     goarm: "7"

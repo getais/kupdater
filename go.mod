@@ -1,4 +1,4 @@
-module github.com/tomasliumparas/kupdater
+module github.com/getais/kupdater
 
 go 1.18
 

@@ -14,10 +14,10 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 
 	"github.com/Masterminds/semver"
+	"github.com/getais/kupdater/api/v1alpha1"
+	opsv1alpha1 "github.com/getais/kupdater/api/v1alpha1"
+	"github.com/getais/kupdater/pkg/libs/helm"
 	"github.com/google/go-github/github"
-	"github.com/tomasliumparas/kupdater/api/v1alpha1"
-	opsv1alpha1 "github.com/tomasliumparas/kupdater/api/v1alpha1"
-	"github.com/tomasliumparas/kupdater/pkg/libs/helm"
 )
 
 // UpdateReconciler reconciles a Update object

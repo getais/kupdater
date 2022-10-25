@@ -1,0 +1,51 @@
+before:
+  hooks:
+    - go mod tidy
+    - go generate ./...
+builds:
+  - id: build
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      # - windows
+      # - darwin
+    goarch:
+      - amd64
+      - arm
+      - arm64
+    goarm:
+      - "6"
+      - "7"
+archives:
+  - replacements:
+      darwin: Darwin
+      linux: Linux
+      windows: Windows
+      386: i386
+      amd64: x86_64
+dockers:
+  - id: "docker"
+    goos: linux
+    goarch: amd64
+    goarm: ""
+    use: docker
+
+    image_templates:
+      - "ghcr.io/getais/kupdater/operator:{{ .Version }}"
+      - "ghcr.io/getais/kupdater/operator:latest"
+
+release:
+  disable: false
+  prerelease: auto
+  mode: replace
+checksum:
+  name_template: "checksums.txt"
+snapshot:
+  name_template: "{{ incpatch .Version }}-next"
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"

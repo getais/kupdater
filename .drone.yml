@@ -52,7 +52,7 @@ steps:
         path: /var/run/docker.sock
     commands:
       - /entrypoint.sh release --snapshot
-      - docker push ghcr.io/getais/kupdater/operator:latest
+      # - docker push ghcr.io/getais/kupdater/operator:latest
     when:
       event:
         - push

@@ -33,6 +33,7 @@ dockers:
     dockerfile: Dockerfile
     build_flag_templates:
       - "--platform=linux/amd64"
+
   - image_templates:
       - "ghcr.io/{{ .ProjectName }}/operator:{{ .Version }}-arm64v8"
       - "ghcr.io/{{ .ProjectName }}/operator:latest-arm64v8"
@@ -41,6 +42,7 @@ dockers:
     dockerfile: Dockerfile
     build_flag_templates:
       - "--platform=linux/arm64/v8"
+
   - image_templates:
       - "ghcr.io/{{ .ProjectName }}/operator:{{ .Version }}-armv6"
       - "ghcr.io/{{ .ProjectName }}/operator:latest-armv6"
@@ -50,6 +52,7 @@ dockers:
     dockerfile: Dockerfile
     build_flag_templates:
       - "--platform=linux/arm/v6"
+
   - image_templates:
       - "ghcr.io/{{ .ProjectName }}/operator:{{ .Version }}-armv7"
       - "ghcr.io/{{ .ProjectName }}/operator:latest-armv7"
@@ -59,6 +62,7 @@ dockers:
     dockerfile: Dockerfile
     build_flag_templates:
       - "--platform=linux/arm/v7"
+
 docker_manifests:
   - name_template: "ghcr.io/{{ .ProjectName }}/operator:{{ .Version }}"
     image_templates:

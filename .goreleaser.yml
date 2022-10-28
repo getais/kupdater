@@ -111,6 +111,7 @@ release:
   disable: false
   prerelease: auto
   mode: replace
+  name_template: "{{.ProjectName}}-operator-{{.Version}}"
 checksum:
   name_template: "checksums.txt"
 snapshot:

@@ -33,6 +33,24 @@ velero           velero                helm     *                  Outdated (2.3
   - Github release from specified Github repo
   - Helm chart version from Helm repo
 
+## Installation
+### Helm chart
+```
+helm repo add getais https://getais.github.io/helm-charts
+helm repo update
+helm install kupdater getais/kupdater
+```
+
+### From source
+Building docker image:
+```
+make docker-build docker-push IMG="somerepo/kupdater:v0.0.1"
+```
+Deploying manifests:
+```bash
+make deploy IMG="somerepo/kupdater:v0.0.1"
+```
+
 ## Configuration
 Example helm source:
 ```yaml
@@ -64,19 +82,6 @@ spec:
         version: "2022.10"
         source: https://github.com/pi-hole/docker-pi-hole
         type: github
-```
-
-## Deployment
-### Helm chart
-TBD
-### From source
-Building docker image:
-```
-make docker-build docker-push IMG="somerepo/kupdater:v0.0.1"
-```
-Deploying manifests:
-```bash
-make deploy IMG="somerepo/kupdater:v0.0.1"
 ```
 
 ## Contributing

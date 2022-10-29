@@ -1,0 +1,6 @@
+apiVersion: ops.getais.cloud/v1alpha1
+kind: AppVersion
+metadata:
+  name: appversion-sample
+spec:
+  # TODO(user): Add fields here

@@ -2,6 +2,7 @@ package helm
 
 import (
 	"crypto/tls"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -40,7 +41,7 @@ type HelmEntry struct {
 	Version     string
 }
 
-func (c *Helm) DoRequest(Req Request) (ResponseData []byte, StatusCode int) {
+func (c *Helm) DoRequest(Req Request) (ResponseData []byte, StatusCode int, err error) {
 
 	client := &http.Client{
 		Timeout: time.Second * 5,
@@ -50,34 +51,38 @@ func (c *Helm) DoRequest(Req Request) (ResponseData []byte, StatusCode int) {
 	}
 
 	apiurl := fmt.Sprintf("%s/index.yaml", c.Request.RepoUrl)
+	_, err = url.ParseRequestURI(apiurl)
+	if err != nil {
+		return nil, 0, errors.New("Invalid Helm repo url")
+	}
 
 	req, _ := http.NewRequest(c.Request.Method, apiurl, strings.NewReader(c.Request.Body.Encode()))
-	// req.Header.Set("Accept", "application/json")
 
 	response, err := client.Do(req)
 	if err != nil {
 		log.Error().Str("Helm", "Response").Msg(err.Error())
+		return nil, 0, err
 	}
 	defer response.Body.Close()
 	responseData, _ := ioutil.ReadAll(response.Body)
 
-	return responseData, response.StatusCode
+	return responseData, response.StatusCode, nil
 }
 
-func (c *Helm) GetReleases(RepoUrl string) HelmRepo {
+func (c *Helm) GetReleases(RepoUrl string) (HelmRepo, error) {
 
 	c.Request = Request{
 		RepoUrl: RepoUrl,
 		Method:  "GET",
 	}
-
-	data, _ := c.DoRequest(c.Request)
-
-	// var ResponseObject struct {
-	// 	Release
-	// }
 	var ResponseObject HelmRepo
+
+	data, code, err := c.DoRequest(c.Request)
+	if code != http.StatusOK {
+		return ResponseObject, err
+	}
+
 	yaml.Unmarshal(data, &ResponseObject)
 
-	return ResponseObject
+	return ResponseObject, nil
 }

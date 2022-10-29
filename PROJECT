@@ -5,7 +5,7 @@ plugins:
   manifests.sdk.operatorframework.io/v2: {}
   scorecard.sdk.operatorframework.io/v2: {}
 projectName: kupdater
-repo: github.com/tomasliumparas/kupdater
+repo: github.com/getais/kupdater
 resources:
 - api:
     crdVersion: v1
@@ -14,6 +14,14 @@ resources:
   domain: getais.cloud
   group: ops
   kind: Update
-  path: github.com/tomasliumparas/kupdater/api/v1alpha1
+  path: github.com/getais/kupdater/api/v1alpha1
+  version: v1alpha1
+- api:
+    crdVersion: v1
+  controller: true
+  domain: getais.cloud
+  group: ops
+  kind: AppVersion
+  path: github.com/getais/kupdater/api/v1alpha1
   version: v1alpha1
 version: "3"

@@ -19,6 +19,7 @@ package main
 import (
 	"flag"
 	"os"
+	"strings"
 
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
 	// to ensure that exec-entrypoint and run can make use of them.
@@ -32,6 +33,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
+	argov1alpha1 "github.com/argoproj/argo-cd/v2/pkg/apis/application/v1alpha1"
 	opsv1alpha1 "github.com/getais/kupdater/api/v1alpha1"
 	"github.com/getais/kupdater/controllers"
 	//+kubebuilder:scaffold:imports
@@ -46,6 +48,7 @@ func init() {
 	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
 
 	utilruntime.Must(opsv1alpha1.AddToScheme(scheme))
+	utilruntime.Must(argov1alpha1.AddToScheme(scheme))
 	//+kubebuilder:scaffold:scheme
 }
 
@@ -53,13 +56,16 @@ func main() {
 	var metricsAddr string
 	var enableLeaderElection bool
 	var probeAddr string
+	var sources string
 	flag.StringVar(&metricsAddr, "metrics-bind-address", ":8080", "The address the metric endpoint binds to.")
 	flag.StringVar(&probeAddr, "health-probe-bind-address", ":8081", "The address the probe endpoint binds to.")
 	flag.BoolVar(&enableLeaderElection, "leader-elect", false,
 		"Enable leader election for controller manager. "+
 			"Enabling this will ensure there is only one active controller manager.")
+	flag.StringVar(&sources, "appversion-sources", "crd", "Sources operator looks into when reconciling")
+
 	opts := zap.Options{
-		Development: false,
+		Development: true,
 	}
 	opts.BindFlags(flag.CommandLine)
 	flag.Parse()
@@ -96,6 +102,23 @@ func main() {
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Update")
 		os.Exit(1)
+	}
+	if err = (&controllers.AppVersionReconciler{
+		Client: mgr.GetClient(),
+		Scheme: mgr.GetScheme(),
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "AppVersion")
+		os.Exit(1)
+	}
+
+	if strings.Contains(sources, "application.argoproj") {
+		if err = (&controllers.ApplicationReconciler{
+			Client: mgr.GetClient(),
+			Scheme: mgr.GetScheme(),
+		}).SetupWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create controller", "controller", "Application")
+			os.Exit(1)
+		}
 	}
 	//+kubebuilder:scaffold:builder
 

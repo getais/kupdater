@@ -6,6 +6,40 @@ metadata:
   name: operator-role
 rules:
 - apiGroups:
+  - argoproj.io
+  resources:
+  - applications
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ops.getais.cloud
+  resources:
+  - appversions
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - ops.getais.cloud
+  resources:
+  - appversions/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - ops.getais.cloud
+  resources:
+  - appversions/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
   - ops.getais.cloud
   resources:
   - updates

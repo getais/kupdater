@@ -28,10 +28,11 @@ velero           velero                helm     *                  Outdated (2.3
 ```
 
 ## Features
-- Single application can have multiple version sources
-- Version source can be:
-  - Github release from specified Github repo
-  - Helm chart version from Helm repo
+- Periodically watches configured applications for updates
+- Configurable via:
+  - CRDs [Done]
+  - ArgoCD application discovery [Experimental]
+  - Annotations on existing resources [TODO]
 
 ## Installation
 ### Helm chart
@@ -55,33 +56,29 @@ make deploy IMG="somerepo/kupdater:v0.0.1"
 Example helm source:
 ```yaml
 apiVersion: ops.getais.cloud/v1alpha1
-kind: Update
+kind: AppVersion
 metadata:
   name: traefik
   namespace: traefik
 spec:
-  versioning:
-    sources:
-      - name: traefik
-        source: https://helm.traefik.io/traefik
-        type: helm
-        version: "17.0.5"
+  name: traefik
+  source: https://helm.traefik.io/traefik
+  type: helm
+  version: "17.0.5"
 ```
 
 Example Github source:
 ```yaml
 apiVersion: ops.getais.cloud/v1alpha1
-kind: Update
+kind: AppVersion
 metadata:
   name: pihole
   namespace: pihole
 spec:
-  versioning:
-    sources:
-      - name: pihole
-        version: "2022.10"
-        source: https://github.com/pi-hole/docker-pi-hole
-        type: github
+  name: pihole
+  version: "2022.10"
+  source: https://github.com/pi-hole/docker-pi-hole
+  type: github
 ```
 
 ## Contributing

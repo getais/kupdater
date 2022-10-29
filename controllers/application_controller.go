@@ -66,8 +66,8 @@ func (r *ApplicationReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 	err = r.Get(ctx, types.NamespacedName{Name: app.Name, Namespace: app.Spec.Destination.Namespace}, appver)
 	if err != nil && errors.IsNotFound(err) {
 
-		// If Helm is present in App
-		if app.Spec.Source.Helm != nil {
+		// If Chart is specified in Application.argoproj
+		if app.Spec.Source.Chart != "" {
 
 			// If helm repo url is valid http url
 			_, err := url.ParseRequestURI(app.Spec.Source.RepoURL)

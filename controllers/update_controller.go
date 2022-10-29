@@ -36,7 +36,7 @@ const reconcilePeriod string = "2m"
 // move the current state of the cluster closer to the desired state.
 func (r *UpdateReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 
-	log := ctrllog.FromContext(ctx)
+	var log = ctrllog.Log.WithName("update.ops.getais.Reconcile").WithValues("namespace", req.Namespace, "name", req.Name)
 
 	// Lookup the Update instance for this reconcile request
 	update := &opsv1alpha1.Update{}
@@ -58,11 +58,12 @@ func (r *UpdateReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 	update.Status.SyncTimestamp = time.Now().Format(time.RFC3339)
 
 	// Check for updates
-	update, err = checkUpdatesHelm(ctx, update)
+	// log.Info(fmt.Sprintf("%+v", update))
+	update = checkUpdatesHelm(ctx, update)
 	update, err = checkUpdatesGithub(ctx, update)
 	if err != nil {
 		log.Error(err, "Failed calling Update services")
-		return ctrl.Result{}, nil
+		return ctrl.Result{RequeueAfter: 2 * time.Minute}, nil
 	}
 
 	// Update CRD status
@@ -109,14 +110,18 @@ func checkUpdatesGithub(ctx context.Context, Update *v1alpha1.Update) (*v1alpha1
 	return Update, nil
 }
 
-func checkUpdatesHelm(ctx context.Context, Update *v1alpha1.Update) (*v1alpha1.Update, error) {
+func checkUpdatesHelm(ctx context.Context, Update *v1alpha1.Update) *v1alpha1.Update {
 	if len(Update.Spec.Versioning.Sources) > 0 {
 		for _, s := range Update.Spec.Versioning.Sources {
 
 			if s.Type == "helm" || s.Type == "Helm" {
 				var Helm helm.Helm
 
-				Repo := Helm.GetReleases(s.Source)
+				Repo, err := Helm.GetReleases(s.Source)
+				if err != nil {
+					Update.Status.Phase = err.Error()
+					return Update
+				}
 				Releases := Repo.Entries[s.Name]
 
 				if len(Releases) > 0 {
@@ -136,5 +141,5 @@ func checkUpdatesHelm(ctx context.Context, Update *v1alpha1.Update) (*v1alpha1.U
 			}
 		}
 	}
-	return Update, nil
+	return Update
 }

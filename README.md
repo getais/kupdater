@@ -32,7 +32,7 @@ velero           velero                helm     *                  Outdated (2.3
 - Configurable via:
   - CRDs [Done]
   - ArgoCD application discovery [Experimental]
-  - Annotations on existing resources [TODO]
+  - Annotations on existing resources [Done]
 
 ## Installation
 ### Helm chart
@@ -53,6 +53,16 @@ make deploy IMG="somerepo/kupdater:v0.0.1"
 ```
 
 ## Configuration
+### Annotations
+| Annotation                          | Description                                                                                                                                    | Required |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| `kupdater.ops.getais.cloud/enabled` | Enables `AppVersion` creation out of this deployment                                                                                           | `true`   |
+| `kupdater.ops.getais.cloud/type`    | Strategy to use for update detection                                                                                                           | `true`   |
+| `kupdater.ops.getais.cloud/source`  | Valid Helm or Git url to check updates againts                                                                                                 | `true`   |
+| `kupdater.ops.getais.cloud/version` | Current version of the application. If `github` strategy is used, current version is taken out of container image tag inside deployment's spec | `false`  |
+
+
+### CRD
 Example helm source:
 ```yaml
 apiVersion: ops.getais.cloud/v1alpha1

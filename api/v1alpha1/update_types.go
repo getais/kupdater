@@ -19,9 +19,9 @@ type UpdateSource struct {
 	Version string `json:"version"`
 }
 type UpdateStatus struct {
-	Conditions    []UpdateSource `json:"conditions"`
-	Phase         string         `json:"phase"`
-	SyncTimestamp string         `json:"syncTimestamp"`
+	Phase         string             `json:"phase"`
+	Conditions    []metav1.Condition `json:"conditions"`
+	SyncTimestamp string             `json:"syncTimestamp"`
 }
 
 // +kubebuilder:object:root=true

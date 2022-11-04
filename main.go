@@ -26,6 +26,7 @@ import (
 
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
 
+	appsv1 "k8s.io/api/apps/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
@@ -47,6 +48,7 @@ var (
 func init() {
 	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
 
+	utilruntime.Must(appsv1.AddToScheme(scheme))
 	utilruntime.Must(opsv1alpha1.AddToScheme(scheme))
 	utilruntime.Must(argov1alpha1.AddToScheme(scheme))
 	//+kubebuilder:scaffold:scheme
@@ -62,7 +64,7 @@ func main() {
 	flag.BoolVar(&enableLeaderElection, "leader-elect", false,
 		"Enable leader election for controller manager. "+
 			"Enabling this will ensure there is only one active controller manager.")
-	flag.StringVar(&sources, "appversion-sources", "crd", "Sources operator looks into when reconciling")
+	flag.StringVar(&sources, "appversion-sources", "crd,deployment", "Sources operator looks into when reconciling")
 
 	opts := zap.Options{
 		Development: true,
@@ -111,8 +113,18 @@ func main() {
 		os.Exit(1)
 	}
 
-	if strings.Contains(sources, "application.argoproj") {
+	if strings.Contains(sources, "argocd") {
 		if err = (&controllers.ApplicationReconciler{
+			Client: mgr.GetClient(),
+			Scheme: mgr.GetScheme(),
+		}).SetupWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create controller", "controller", "Application")
+			os.Exit(1)
+		}
+	}
+
+	if strings.Contains(sources, "deployment") {
+		if err = (&controllers.DeploymentReconciler{
 			Client: mgr.GetClient(),
 			Scheme: mgr.GetScheme(),
 		}).SetupWithManager(mgr); err != nil {

@@ -7,6 +7,8 @@ import (
 	"time"
 
 	"k8s.io/apimachinery/pkg/api/errors"
+	meta "k8s.io/apimachinery/pkg/api/meta"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -51,14 +53,13 @@ func (r *UpdateReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 		return ctrl.Result{}, err
 	}
 
-	log.Info("Processing object")
+	log.Info("Reconciling")
 
 	update.Status.Phase = "UpToDate"
-	update.Status.Conditions = []opsv1alpha1.UpdateSource{}
 	update.Status.SyncTimestamp = time.Now().Format(time.RFC3339)
+	meta.SetStatusCondition(&update.Status.Conditions, metav1.Condition{Type: "UpToDate", Status: metav1.ConditionFalse, Reason: "CheckingForUpdates", Message: "Currently checking for new updates"})
 
 	// Check for updates
-	// log.Info(fmt.Sprintf("%+v", update))
 	update = checkUpdatesHelm(ctx, update)
 	update, err = checkUpdatesGithub(ctx, update)
 	if err != nil {
@@ -67,7 +68,10 @@ func (r *UpdateReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 	}
 
 	// Update CRD status
-	r.Status().Update(ctx, update)
+	err = r.Status().Update(ctx, update)
+	if err != nil {
+		log.Error(err, "Failed to update status")
+	}
 
 	return ctrl.Result{}, nil
 }
@@ -99,10 +103,11 @@ func checkUpdatesGithub(ctx context.Context, Update *v1alpha1.Update) (*v1alpha1
 
 				LatestVersion := *release.TagName
 
+				meta.SetStatusCondition(&Update.Status.Conditions, metav1.Condition{Type: "UpToDate", Status: metav1.ConditionTrue, Reason: "NoUpdatesAvailable", Message: "No updates were found"})
 				if s.Version != LatestVersion {
 					Update.Status.Phase = fmt.Sprintf("Outdated (%s available)", LatestVersion)
 					s.Version = LatestVersion
-					Update.Status.Conditions = append(Update.Status.Conditions, s)
+					meta.SetStatusCondition(&Update.Status.Conditions, metav1.Condition{Type: "UpToDate", Status: metav1.ConditionFalse, Reason: "UpdatesAvailable", Message: fmt.Sprintf("New release available: %s", LatestVersion)})
 				}
 			}
 		}
@@ -132,10 +137,11 @@ func checkUpdatesHelm(ctx context.Context, Update *v1alpha1.Update) *v1alpha1.Up
 					}
 					LatestVersion := Versions[0].String()
 
+					meta.SetStatusCondition(&Update.Status.Conditions, metav1.Condition{Type: "UpToDate", Status: metav1.ConditionTrue, Reason: "NoUpdatesAvailable", Message: "No updates were found"})
 					if s.Version != LatestVersion {
 						Update.Status.Phase = fmt.Sprintf("Outdated (%s available)", LatestVersion)
 						s.Version = LatestVersion
-						Update.Status.Conditions = append(Update.Status.Conditions, s)
+						meta.SetStatusCondition(&Update.Status.Conditions, metav1.Condition{Type: "UpToDate", Status: metav1.ConditionFalse, Reason: "UpdatesAvailable", Message: fmt.Sprintf("New release available: %s", LatestVersion)})
 					}
 				}
 			}

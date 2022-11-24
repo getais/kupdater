@@ -101,39 +101,6 @@ This project aims to follow the Kubernetes [Operator pattern](https://kubernetes
 It uses [Controllers](https://kubernetes.io/docs/concepts/architecture/controller/) 
 which provides a reconcile function responsible for synchronizing resources untile the desired state is reached on the cluster 
 
-## Development guide
-
-### Running locally against kubernetes cluster
-1. Install CRD definitions
-```bash
-make generate
-make manifests
-make install
-```
-2. Install Instances of Custom Resources:
-
-```sh
-kubectl apply -f config/samples/
-```
-
-3. Run operator on local machine against current k8s context
-```bash
-make run
-```
-
-### Cleaning up
-To delete the CRDs from the cluster:
-
-```sh
-make uninstall
-```
-
-UnDeploy the controller to the cluster:
-
-```sh
-make undeploy
-```
-
 ## License
 
 Copyright 2022.

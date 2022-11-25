@@ -18,6 +18,7 @@ package controllers
 
 import (
 	"context"
+	"reflect"
 	"time"
 
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -60,12 +61,17 @@ func (r *AppVersionReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 		return ctrl.Result{}, err
 	}
 
-	update := &opsv1alpha1.Update{}
-	err = r.Get(ctx, types.NamespacedName{Name: appver.Name, Namespace: appver.Namespace}, update)
+	// Lookup Update instance
+	updateFound := &opsv1alpha1.Update{}
+	updateNew := r.NewUpdate(appver)
+
+	err = r.Get(ctx, types.NamespacedName{Name: appver.Name, Namespace: appver.Namespace}, updateFound)
+
+	// Handle Update creation
 	if err != nil && errors.IsNotFound(err) {
-		update = r.NewUpdate(appver)
+
 		log.Info("Creating a new Update")
-		err = r.Create(ctx, update)
+		err = r.Create(ctx, updateNew)
 		if err != nil {
 			log.Error(err, "Failed to create new Update")
 			return ctrl.Result{RequeueAfter: 2 * time.Minute}, err
@@ -75,6 +81,19 @@ func (r *AppVersionReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 	} else if err != nil {
 		log.Error(err, "Failed to get Update")
 		return ctrl.Result{}, err
+	}
+
+	// Handle VPA updates
+	if !reflect.DeepEqual(updateFound.Spec, updateNew.Spec) {
+		log.Info("Updating Update instance")
+
+		updateFound.Spec = updateNew.Spec
+
+		err = r.Update(ctx, updateFound)
+		if err != nil {
+			log.Error(err, "Failed to update Update instance")
+			return ctrl.Result{RequeueAfter: 2 * time.Minute}, nil
+		}
 	}
 	log.Info("Reconciled")
 	return ctrl.Result{}, nil

@@ -73,6 +73,7 @@ func (r *UpdateReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 		log.Error(err, "Failed to update status")
 	}
 
+	log.Info("Reconciled")
 	return ctrl.Result{}, nil
 }
 
@@ -107,7 +108,7 @@ func checkUpdatesGithub(ctx context.Context, Update *v1alpha1.Update) (*v1alpha1
 				if s.Version != LatestVersion {
 					Update.Status.Phase = fmt.Sprintf("Outdated (%s available)", LatestVersion)
 					s.Version = LatestVersion
-					meta.SetStatusCondition(&Update.Status.Conditions, metav1.Condition{Type: "UpToDate", Status: metav1.ConditionFalse, Reason: "UpdatesAvailable", Message: fmt.Sprintf("New release available: %s", LatestVersion)})
+					meta.SetStatusCondition(&Update.Status.Conditions, metav1.Condition{Type: "Outdated", Status: metav1.ConditionTrue, Reason: "UpdatesAvailable", Message: fmt.Sprintf("New release available: %s", LatestVersion)})
 				}
 			}
 		}
@@ -141,7 +142,7 @@ func checkUpdatesHelm(ctx context.Context, Update *v1alpha1.Update) *v1alpha1.Up
 					if s.Version != LatestVersion {
 						Update.Status.Phase = fmt.Sprintf("Outdated (%s available)", LatestVersion)
 						s.Version = LatestVersion
-						meta.SetStatusCondition(&Update.Status.Conditions, metav1.Condition{Type: "UpToDate", Status: metav1.ConditionFalse, Reason: "UpdatesAvailable", Message: fmt.Sprintf("New release available: %s", LatestVersion)})
+						meta.SetStatusCondition(&Update.Status.Conditions, metav1.Condition{Type: "Outdated", Status: metav1.ConditionTrue, Reason: "UpdatesAvailable", Message: fmt.Sprintf("New release available: %s", LatestVersion)})
 					}
 				}
 			}
